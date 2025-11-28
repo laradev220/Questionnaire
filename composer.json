@@ -1,4 +1,7 @@
 {
+  "name": "muhammad/research-survey-app",
+  "description": "A PHP-based web application for conducting research surveys with participant management and admin analytics",
+  "license": "MIT",
   "require": {
     "eftec/bladeone": "^4.10",
     "vlucas/phpdotenv": "^5.0"

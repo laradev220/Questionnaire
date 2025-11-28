@@ -1,24 +1,15 @@
 <?php return array(
     'root' => array(
-        'name' => '__root__',
+        'name' => 'muhammad/research-survey-app',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '523e2051b7c7bf6619b0c63bee893bf9cc04dbd0',
+        'reference' => 'c2d615d0607983e2e0ddcdfb7259f54a0220134b',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '523e2051b7c7bf6619b0c63bee893bf9cc04dbd0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'eftec/bladeone' => array(
             'pretty_version' => '4.19.1',
             'version' => '4.19.1.0',
@@ -34,6 +25,15 @@
             'reference' => '3ba905c11371512af9d9bdd27d99b782216b6945',
             'type' => 'library',
             'install_path' => __DIR__ . '/../graham-campbell/result-type',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'muhammad/research-survey-app' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'c2d615d0607983e2e0ddcdfb7259f54a0220134b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
