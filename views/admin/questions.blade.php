@@ -1,0 +1,54 @@
+@extends('layouts.admin')
+
+@section('page-title', 'Manage Questions')
+
+@section('content')
+    <div class="bg-white rounded-xl shadow-xl border border-gray-100 p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-extrabold text-gray-900">Questions List</h1>
+            <a href="/admin/questions/add"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold">Add Question</a>
+        </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Module</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Text
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($questions as $question)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ $question['id'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $question['module'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $question['group'] ?: '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $question['code'] }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{{ $question['text'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="/admin/questions/edit/{{ $question['id'] }}"
+                                        class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                    <a href="/admin/questions/delete/{{ $question['id'] }}"
+                                        class="text-red-600 hover:text-red-900"
+                                        onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+@endsection
