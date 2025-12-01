@@ -3,7 +3,8 @@
 @section('content')
     <div class="max-w-4xl mx-auto py-10">
         <div class="bg-white rounded-xl shadow-xl border border-gray-100 p-8">
-            <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Welcome, {{ $_SESSION['participant_name'] ?? 'Participant' }}
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Welcome,
+                {{ $_SESSION['participant_name'] ?? 'Participant' }}
             </h1>
             <p class="text-gray-600 mb-8 max-w-2xl">
                 Thank you for participating in our research on Sustainable Human Resource Management and Organizational
@@ -18,7 +19,6 @@
                     <p class="text-blue-700 text-sm mt-1">
                         Please use the 5-point Likert scale to rate each statement (1 = Strongly Disagree, 5 = Strongly
                         Agree).
-                        You can save your progress and return later. Your current progress will determine where you start.
                     </p>
                 </div>
             </div>
