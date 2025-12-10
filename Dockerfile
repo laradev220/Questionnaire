@@ -21,15 +21,22 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Copy application code
 COPY . .
 
+# Create .env file for Render
+RUN echo "DB_HOST=${RENDER_DB_HOST:-localhost}" > .env \
+    && echo "DB_NAME=${RENDER_DB_NAME:-research_db}" >> .env \
+    && echo "DB_USER=${RENDER_DB_USER:-root}" >> .env \
+    && echo "DB_PASS=${RENDER_DB_PASSWORD:-}" >> .env
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 775 /var/www/html/cache
+    && chmod -R 775 /var/www/html/cache \
+    && mkdir -p /var/www/html/cache
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
