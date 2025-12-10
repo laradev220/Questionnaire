@@ -7,6 +7,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// Set timezone to Pakistan Standard Time
+date_default_timezone_set('Asia/Karachi');
+
 session_start();
 
 use eftec\bladeone\BladeOne;

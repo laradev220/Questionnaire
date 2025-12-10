@@ -46,8 +46,48 @@ class AdminController
 
     public function dashboard()
     {
-        // Show admin dashboard with links to questions, analytics, etc.
-        echo $this->blade->run("admin.dashboard");
+        // Key metrics for dashboard
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM responses WHERE score IS NOT NULL");
+        $totalResponses = $stmt->fetch()['total'];
+
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM survey_sessions");
+        $totalSessions = $stmt->fetch()['total'];
+
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM survey_sessions WHERE is_completed = 1");
+        $completedSessions = $stmt->fetch()['total'];
+
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM participants");
+        $totalParticipants = $stmt->fetch()['total'];
+
+        // Completion rate
+        $completionRate = $totalSessions > 0 ? round(($completedSessions / $totalSessions) * 100, 1) : 0;
+
+        // Average survey score
+        $stmt = $this->db->query("SELECT AVG(score) as avg_score FROM responses WHERE score IS NOT NULL");
+        $avgScore = $stmt->fetch()['avg_score'];
+        $avgScore = $avgScore ? round($avgScore, 2) : 0;
+
+        // Recent activity (last 5 completed surveys)
+        $stmt = $this->db->query("
+            SELECT ss.id, ss.created_at, p.name, p.email
+            FROM survey_sessions ss
+            JOIN participants p ON ss.participant_id = p.id
+            WHERE ss.is_completed = 1
+            ORDER BY ss.created_at DESC
+            LIMIT 5
+        ");
+        $recentActivity = $stmt->fetchAll();
+
+        // Show admin dashboard with KPI data
+        echo $this->blade->run("admin.dashboard", [
+            'totalResponses' => $totalResponses,
+            'totalSessions' => $totalSessions,
+            'completedSessions' => $completedSessions,
+            'totalParticipants' => $totalParticipants,
+            'completionRate' => $completionRate,
+            'avgScore' => $avgScore,
+            'recentActivity' => $recentActivity
+        ]);
     }
 
     public function questions()

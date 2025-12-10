@@ -9,22 +9,22 @@
             <form method="POST" action="/admin/questions/add" class="space-y-6">
                 <div>
                     <label for="module" class="block text-sm font-medium text-gray-700">Module</label>
-                    <input type="text" name="module" id="module" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="module" id="module" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label for="group" class="block text-sm font-medium text-gray-700">Group</label>
-                    <input type="text" name="group" id="group" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="group" id="group" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label for="code" class="block text-sm font-medium text-gray-700">Code</label>
-                    <input type="text" name="code" id="code" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" name="code" id="code" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label for="text" class="block text-sm font-medium text-gray-700">Text</label>
-                    <textarea name="text" id="text" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    <textarea name="text" id="text" rows="4" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 focus:ring-blue-500 focus:border-blue-500"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3">

@@ -29,16 +29,34 @@ class SurveyController
         $name = $_POST['name'];
         $email = $_POST['email'];
         $phone = $_POST['phone'];
+        $university = $_POST['university'];
+        $designation = $_POST['designation'];
 
-        // Insert participant
-        $stmt = $this->db->prepare("INSERT INTO participants (name, email, phone) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $email, $phone]);
-        $participantId = $this->db->lastInsertId();
+        // Check if participant exists
+        $stmt = $this->db->prepare("SELECT id, name FROM participants WHERE email = ?");
+        $stmt->execute([$email]);
+        $existing = $stmt->fetch();
 
-        // Create survey session
-        $stmt = $this->db->prepare("INSERT INTO survey_sessions (participant_id) VALUES (?)");
+        if ($existing) {
+            $participantId = $existing['id'];
+            $name = $existing['name'];
+        } else {
+            // Insert new participant
+            $stmt = $this->db->prepare("INSERT INTO participants (name, email, phone, university, designation) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $email, $phone, $university, $designation]);
+            $participantId = $this->db->lastInsertId();
+        }
+
+        // Check for active session
+        $stmt = $this->db->prepare("SELECT id FROM survey_sessions WHERE participant_id = ? AND is_completed = 0 ORDER BY id DESC LIMIT 1");
         $stmt->execute([$participantId]);
-        $sessionId = $this->db->lastInsertId();
+        $session = $stmt->fetch();
+
+        if (!$session) {
+            // Create new survey session
+            $stmt = $this->db->prepare("INSERT INTO survey_sessions (participant_id) VALUES (?)");
+            $stmt->execute([$participantId]);
+        }
 
         // Store in session
         $_SESSION['participant_id'] = $participantId;
@@ -141,29 +159,25 @@ class SurveyController
             $totalPages = count($groups);
             $currentGroup = $groups[$page - 1];
 
-             // Get participant data
-             $participantId = $_SESSION['participant_id'];
-             $stmt = $this->db->prepare("SELECT name, email, phone FROM participants WHERE id = ?");
-             $stmt->execute([$participantId]);
-             $participant = $stmt->fetch();
+
 
              // Get all questions in the current group
              $stmt = $this->db->prepare("SELECT code, text FROM questions WHERE module = ? AND `group` = ? ORDER BY id");
              $stmt->execute([$moduleName, $currentGroup]);
              $questions = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // code => text
 
-             // Save Answers for current group
-             $weights = [1 => 1.0, 2 => 1.5, 3 => 2.0, 4 => 2.5, 5 => 3.0];
-             $insertStmt = $this->db->prepare("INSERT INTO responses (session_id, question_id, question_text, score, weight, participant_name, participant_email, participant_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE score = VALUES(score), weight = VALUES(weight), question_text = VALUES(question_text), participant_name = VALUES(participant_name), participant_email = VALUES(participant_email), participant_phone = VALUES(participant_phone)");
+              // Save Answers for current group
+              $weights = [1 => 1.0, 2 => 1.5, 3 => 2.0, 4 => 2.5, 5 => 3.0];
+               $insertStmt = $this->db->prepare("INSERT INTO responses (session_id, question_id, score, weight) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE score = VALUES(score), weight = VALUES(weight)");
 
-             foreach ($questions as $code => $text) {
-                 $value = $_POST[$code] ?? null;
-                 if ($value === null || (is_numeric($value) && $value >= 1 && $value <= 5)) {
-                     $score = $value;
-                     $weight = $value ? $weights[$value] : null;
-                     $insertStmt->execute([$session['id'], $code, $text, $score, $weight, $participant['name'], $participant['email'], $participant['phone']]);
-                 }
-             }
+              foreach ($questions as $code => $text) {
+                  $value = $_POST[$code] ?? null;
+                  if ($value === null || (is_numeric($value) && $value >= 1 && $value <= 5)) {
+                      $score = $value;
+                      $weight = $value ? $weights[$value] : null;
+                       $insertStmt->execute([$session['id'], $code, $score, $weight]);
+                  }
+              }
 
             // Navigate
             if ($page < $totalPages) {

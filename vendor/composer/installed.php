@@ -3,7 +3,7 @@
         'name' => 'muhammad/research-survey-app',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'c2d615d0607983e2e0ddcdfb7259f54a0220134b',
+        'reference' => '600d8b7840ac04758a8b7d9a94b61e2269c9b5ac',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'muhammad/research-survey-app' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'c2d615d0607983e2e0ddcdfb7259f54a0220134b',
+            'reference' => '600d8b7840ac04758a8b7d9a94b61e2269c9b5ac',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -15,6 +15,8 @@ CREATE TABLE participants (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
+    university VARCHAR(255) NOT NULL,
+    designation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,15 +38,11 @@ CREATE TABLE questions (
 );
 
 CREATE TABLE responses (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    session_id INT NOT NULL,
-    question_id VARCHAR(50) NOT NULL,
-    question_text TEXT NOT NULL,
-    score TINYINT NULL, -- 1-5 or NULL
-    weight DECIMAL(3,1) NULL,
-    participant_name VARCHAR(255) NOT NULL,
-    participant_email VARCHAR(255) NOT NULL,
-    participant_phone VARCHAR(20),
-    FOREIGN KEY (session_id) REFERENCES survey_sessions(id),
-    UNIQUE KEY unique_response (session_id, question_id)
-);
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     session_id INT NOT NULL,
+     question_id VARCHAR(50) NOT NULL,
+     score TINYINT NULL, -- 1-5 or NULL
+     weight DECIMAL(3,1) NULL,
+     FOREIGN KEY (session_id) REFERENCES survey_sessions(id),
+     UNIQUE KEY unique_response (session_id, question_id)
+ );
