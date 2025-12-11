@@ -1,65 +1,45 @@
 # Research Survey Application
 
-A PHP-based web application for conducting research surveys with participant management and admin analytics.
+A procedural PHP-based web application for conducting research surveys with participant management and admin analytics.
 
 ## Prerequisites
 
 - PHP 7.1 or higher
 - MySQL 5.7 or higher
-- Composer (for dependency management)
-- Apache or Nginx web server (or use Docker)
+- Apache or Nginx web server
 
 ## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd research-app
-   ```
+    ```bash
+    git clone <repository-url>
+    cd research-app
+    ```
 
-2. Install PHP dependencies:
-   ```bash
-   composer install
-   ```
+2. Set up the database:
+    - Create a MySQL database named `research_db`
+    - Import the schema:
+      ```bash
+      mysql -u root -p research_db < schema.sql
+      ```
+    - Update database credentials in `public/config.php`
 
-3. Set up the database:
-   - Create a MySQL database named `research_db`
-   - Import the schema:
-     ```bash
-     mysql -u root -p research_db < schema.sql
-     ```
-   - Update database credentials in `.env` file (see Configuration section)
-
-4. Configure environment variables:
-   - Copy `.env.example` to `.env` and update the values
-
-## Configuration
-
-Create a `.env` file in the root directory with the following variables:
-
-```
-DB_HOST=localhost
-DB_NAME=research_db
-DB_USER=root
-DB_PASS=your_password
-```
+3. Configure database settings:
+    - Edit `public/config.php` and update DB_HOST, DB_NAME, DB_USER, DB_PASS
 
 ## Running Locally
 
 ### Using XAMPP
 
-1. Place the project in `htdocs` directory
+1. Place the `public/` directory contents in `htdocs` directory (or set document root to `public/`)
 2. Start XAMPP (Apache and MySQL)
-3. Access the application at `http://localhost/research-app/public/`
+3. Access the application at `http://localhost/`
 
-### Using Docker
+### Manual Setup
 
-1. Ensure Docker and Docker Compose are installed
-2. Run:
-   ```bash
-   docker-compose up --build
-   ```
-3. Access at `http://localhost:8080`
+1. Copy `public/` to your web server's document root
+2. Ensure PHP has PDO MySQL extension enabled
+3. Access at your server's URL
 
 ## Usage
 
@@ -75,27 +55,25 @@ DB_PASS=your_password
 
 ## Deployment
 
-### Docker Deployment
-Use the provided `docker-compose.yml` for easy deployment.
-
 ### Manual Deployment
-1. Upload files to web server
+1. Upload `public/` directory to web server
 2. Ensure PHP and MySQL are configured
-3. Set environment variables
-4. Run database migrations if needed
+3. Set database credentials in `config.php`
+4. Import `schema.sql` to database
 
 ## Project Structure
 
-- `public/`: Web root with entry point
-- `src/`: PHP controllers and database class
-- `views/`: BladeOne templates
-- `config/`: Configuration files
-- `cache/`: BladeOne cache directory
-- `vendor/`: Composer dependencies
+- `public/`: Web root with all application files
+  - `index.php`: Main entry point
+  - `config.php`: Database configuration
+  - `includes/`: Procedural function files
+  - `templates/`: HTML templates
+- `database.sql`: Sample data
+- `schema.sql`: Database schema
 
 ## Technologies Used
 
-- PHP
+- PHP (procedural)
 - MySQL
-- BladeOne templating engine
-- Composer for dependency management
+- Tailwind CSS (via CDN)
+- Font Awesome (via CDN)
