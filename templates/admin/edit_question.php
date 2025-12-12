@@ -9,85 +9,88 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50">
+    <!-- Mobile menu button -->
+    <div class="lg:hidden fixed top-0 left-0 z-50 p-4">
+        <button id="menu-btn" class="text-gray-800 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </div>
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-gray-800 text-white">
-            <div class="p-4 flex justify-between items-center">
-                <h2 class="text-2xl font-bold">Admin Panel</h2>
-                <button id="close-btn" class="lg:hidden text-gray-300 hover:text-white focus:outline-none">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <nav class="mt-4">
-                <a href="<?php echo BASE_PATH; ?>/admin/dashboard" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200">
-                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                </a>
-                <div class="px-4 py-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-300 font-medium">
-                            <i class="fas fa-question-circle mr-2"></i>Manage Questions
-                        </span>
-                        <i class="fas fa-chevron-down text-gray-400"></i>
-                    </div>
-                    <div class="ml-6 mt-2 space-y-1">
-                        <a href="<?php echo BASE_PATH; ?>/admin/questions"
-                            class="block px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 hover:text-white transition-all duration-200">
-                            <i class="fas fa-list mr-2"></i>List Questions
-                        </a>
-                        <a href="<?php echo BASE_PATH; ?>/admin/questions/add"
-                            class="block px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 hover:text-white transition-all duration-200">
-                            <i class="fas fa-plus mr-2"></i>Add Question
-                        </a>
-                    </div>
-                </div>
-                <a href="<?php echo BASE_PATH; ?>/admin/analytics" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200">
-                    <i class="fas fa-chart-bar mr-2"></i>Analytics
-                </a>
-                <a href="<?php echo BASE_PATH; ?>/admin/logout" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200">
-                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                </a>
-            </nav>
-        </div>
+        <?php include 'templates/admin/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-sm px-6 py-4">
-                <h1 class="text-2xl font-semibold text-gray-900">Edit Question</h1>
-            </header>
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 pt-16 lg:pt-6">
-                <form method="POST" class="bg-white p-6 rounded">
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Module</label>
-                        <input type="text" name="module" value="<?php echo htmlspecialchars($question['module']); ?>" required class="w-full px-3 py-2 border">
+            <?php $pageTitle = 'Edit Question'; include 'templates/admin/header.php'; ?>
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Edit Question</h2>
+                            <p class="text-gray-600">Update the question details below.</p>
+                        </div>
+                        <form method="POST" class="space-y-6">
+                            <div>
+                                <label for="module" class="block text-sm font-medium text-gray-700 mb-2">Module <span class="text-red-500">*</span></label>
+                                <input type="text" id="module" name="module" value="<?php echo htmlspecialchars($question['module']); ?>" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                       placeholder="Enter module name">
+                            </div>
+                            <div>
+                                <label for="group" class="block text-sm font-medium text-gray-700 mb-2">Group</label>
+                                <input type="text" id="group" name="group" value="<?php echo htmlspecialchars($question['group'] ?? ''); ?>"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                       placeholder="Enter group (optional)">
+                            </div>
+                            <div>
+                                <label for="code" class="block text-sm font-medium text-gray-700 mb-2">Code <span class="text-red-500">*</span></label>
+                                <input type="text" id="code" name="code" value="<?php echo htmlspecialchars($question['code']); ?>" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                       placeholder="Enter question code">
+                            </div>
+                            <div>
+                                <label for="text" class="block text-sm font-medium text-gray-700 mb-2">Question Text <span class="text-red-500">*</span></label>
+                                <textarea id="text" name="text" required rows="4"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-vertical"
+                                          placeholder="Enter the question text"><?php echo htmlspecialchars($question['text']); ?></textarea>
+                            </div>
+                            <div class="flex gap-4 pt-4">
+                                <button type="submit"
+                                        class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 font-medium">
+                                    <i class="fas fa-save mr-2"></i>Update Question
+                                </button>
+                                <a href="<?php echo BASE_PATH; ?>/admin/questions"
+                                   class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 font-medium">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Group</label>
-                        <input type="text" name="group" value="<?php echo htmlspecialchars($question['group'] ?? ''); ?>" class="w-full px-3 py-2 border">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Code</label>
-                        <input type="text" name="code" value="<?php echo htmlspecialchars($question['code']); ?>" required class="w-full px-3 py-2 border">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Text</label>
-                        <textarea name="text" required class="w-full px-3 py-2 border"><?php echo htmlspecialchars($question['text']); ?></textarea>
-                    </div>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
-                </form>
+                </div>
             </main>
         </div>
     </div>
+
     <script>
+        // Sidebar toggle
         const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
         const closeBtn = document.getElementById('close-btn');
+        const sidebar = document.getElementById('sidebar');
         menuBtn.addEventListener('click', () => {
             sidebar.classList.toggle('-translate-x-full');
         });
         closeBtn.addEventListener('click', () => {
             sidebar.classList.add('-translate-x-full');
         });
+
+        // Submenu toggle
+        function toggleSubmenu() {
+            const submenu = document.getElementById('submenu');
+            const chevron = document.getElementById('chevron');
+            submenu.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
     </script>
 </body>
 

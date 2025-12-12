@@ -43,9 +43,9 @@
                     </p>
                 </div>
 
-                <a href="<?php echo BASE_PATH; ?>/dashboard"
+                <a href="<?php echo BASE_PATH; ?>/progress"
                     class="text-blue-600 font-medium hover:text-blue-800 flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-arrow-left"></i><span>Return to Dashboard</span>
+                    <i class="fa-solid fa-arrow-left"></i><span>Return to Progress</span>
                 </a>
             </div>
         </div>

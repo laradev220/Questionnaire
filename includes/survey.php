@@ -46,7 +46,7 @@ function survey_start() {
     $_SESSION['participant_id'] = $participantId;
     $_SESSION['participant_name'] = $name;
 
-    header("Location: " . BASE_PATH . "/dashboard");
+    header("Location: " . BASE_PATH . "/progress");
     exit;
 }
 

@@ -28,7 +28,7 @@ if ($uri === '/') {
         // Show participant form
         include 'templates/survey/participant_form.php';
     }
-} elseif ($uri === '/dashboard') {
+} elseif ($uri === '/progress') {
     survey_dashboard();
 } elseif ($uri === '/survey') {
     $module = $_GET['module'] ?? 1;
