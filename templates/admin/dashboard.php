@@ -111,23 +111,27 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                                </tr>
+                                 <tr>
+                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <?php foreach ($participantStatus as $participant): ?>
                                     <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            <?php echo htmlspecialchars($participant['name']); ?>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <?php echo htmlspecialchars($participant['email']); ?>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                             <?php echo htmlspecialchars($participant['name']); ?>
+                                         </td>
+                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                             <?php echo htmlspecialchars($participant['email']); ?>
+                                         </td>
+                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                             <?php echo htmlspecialchars($participant['phone'] ?? ''); ?>
+                                         </td>
+                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 <?php echo $participant['is_completed'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
                                                 <?php echo $participant['is_completed'] ? 'Completed' : 'In Progress'; ?>

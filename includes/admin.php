@@ -65,7 +65,7 @@ function admin_dashboard() {
 
     // Participant survey status
     $stmt = $db->query("
-        SELECT p.name, p.email, p.created_at as joined_at,
+        SELECT p.name, p.email, p.phone, p.created_at as joined_at,
                COALESCE(ss.is_completed, 0) as is_completed,
                COALESCE(ss.created_at, p.created_at) as survey_started
         FROM participants p
@@ -197,7 +197,7 @@ function admin_analytics() {
 
     // Participant survey status
     $stmt = $db->query("
-        SELECT p.name, p.email, p.created_at as joined_at,
+        SELECT p.name, p.email, p.phone, p.created_at as joined_at,
                COALESCE(ss.is_completed, 0) as is_completed,
                COALESCE(ss.created_at, p.created_at) as survey_started
         FROM participants p
