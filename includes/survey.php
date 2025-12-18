@@ -80,7 +80,8 @@ function survey_dashboard() {
 
         include __DIR__ . '/../templates/survey/dashboard.php';
     } catch (Exception $e) {
-        die("Error: " . $e->getMessage());
+        header("Location: " . BASE_PATH . "/");
+        exit;
     }
 }
 
@@ -114,7 +115,8 @@ function survey_show_module($moduleId, $page = 1) {
 
         include __DIR__ . '/../templates/survey/module.php';
     } catch (Exception $e) {
-        die("Error: " . $e->getMessage());
+        header("Location: " . BASE_PATH . "/");
+        exit;
     }
 }
 
@@ -122,6 +124,10 @@ function survey_store_module($moduleId, $page) {
     global $moduleNames;
     $db = get_db_connection();
     try {
+        if (!isset($_SESSION['participant_id'])) {
+            header("Location: " . BASE_PATH . "/");
+            exit;
+        }
         $participantId = $_SESSION['participant_id'];
 
         // Get participant details
@@ -135,7 +141,8 @@ function survey_store_module($moduleId, $page) {
         $session = $stmt->fetch();
 
         if (!$session) {
-            die("No active session");
+            header("Location: " . BASE_PATH . "/");
+            exit;
         }
 
         // Get groups for this module
@@ -179,7 +186,8 @@ function survey_store_module($moduleId, $page) {
             }
         }
     } catch (Exception $e) {
-        die("Error: " . $e->getMessage());
+        header("Location: " . BASE_PATH . "/");
+        exit;
     }
 }
 ?>
