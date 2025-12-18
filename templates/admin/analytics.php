@@ -51,6 +51,21 @@
                     </form>
                 </div>
 
+                <!-- Export Data -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Export Data</h3>
+                    <div class="flex gap-4">
+                        <a href="<?php echo BASE_PATH; ?>/admin/export/participants?<?php echo http_build_query(array_filter(['start_date' => $_GET['start_date'] ?? '', 'end_date' => $_GET['end_date'] ?? ''])); ?>"
+                           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-download mr-2"></i>Export Participants
+                        </a>
+                        <a href="<?php echo BASE_PATH; ?>/admin/export/responses?<?php echo http_build_query(array_filter(['start_date' => $_GET['start_date'] ?? '', 'end_date' => $_GET['end_date'] ?? ''])); ?>"
+                           class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-download mr-2"></i>Export Responses
+                        </a>
+                    </div>
+                </div>
+
                 <!-- KPI CARDS -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
 

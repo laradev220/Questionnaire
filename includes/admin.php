@@ -209,4 +209,82 @@ function admin_analytics() {
 
     include __DIR__ . '/../templates/admin/analytics.php';
 }
+
+function admin_export_participants() {
+    $db = get_db_connection();
+
+    $startDate = $_GET['start_date'] ?? null;
+    $endDate = $_GET['end_date'] ?? null;
+    $params = [];
+    $dateFilter = '';
+    if ($startDate && $endDate) {
+        $dateFilter = ' AND ss.created_at BETWEEN ? AND ?';
+        $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
+    }
+
+    $stmt = $db->prepare("SELECT p.name, p.email, p.phone, p.university, p.designation, p.created_at as joined_at, COALESCE(ss.is_completed, 0) as is_completed FROM participants p LEFT JOIN survey_sessions ss ON p.id = ss.participant_id WHERE 1=1 $dateFilter ORDER BY p.created_at DESC");
+    $stmt->execute($params);
+    $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // CSV output
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="participants_' . date('Y-m-d') . '.csv"');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+    fputcsv($output, ['Name', 'Email', 'Phone', 'University', 'Designation', 'Joined Date', 'Status']);
+
+    foreach ($participants as $p) {
+        fputcsv($output, [
+            $p['name'],
+            $p['email'],
+            $p['phone'],
+            $p['university'],
+            $p['designation'],
+            date('m/d/Y', strtotime($p['joined_at'])),
+            $p['is_completed'] ? 'Completed' : 'In Progress'
+        ]);
+    }
+    fclose($output);
+    exit;
+}
+
+function admin_export_responses() {
+    $db = get_db_connection();
+
+    $startDate = $_GET['start_date'] ?? null;
+    $endDate = $_GET['end_date'] ?? null;
+    $params = [];
+    $dateFilter = '';
+    if ($startDate && $endDate) {
+        $dateFilter = ' AND ss.created_at BETWEEN ? AND ?';
+        $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
+    }
+
+    $stmt = $db->prepare("SELECT p.name, p.email, q.code, q.text, q.module, q.group, r.score, r.weight, ss.created_at as response_date FROM responses r JOIN survey_sessions ss ON r.session_id = ss.id JOIN participants p ON ss.participant_id = p.id JOIN questions q ON r.question_id = q.code WHERE r.score IS NOT NULL $dateFilter ORDER BY ss.created_at, q.code");
+    $stmt->execute($params);
+    $responses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // CSV output
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="responses_' . date('Y-m-d') . '.csv"');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+    fputcsv($output, ['Participant Name', 'Email', 'Question Code', 'Question Text', 'Module', 'Group', 'Score', 'Weight', 'Response Date']);
+
+    foreach ($responses as $r) {
+        fputcsv($output, [
+            $r['name'],
+            $r['email'],
+            $r['code'],
+            $r['text'],
+            $r['module'],
+            $r['group'],
+            $r['score'],
+            $r['weight'],
+            date('m/d/Y H:i', strtotime($r['response_date']))
+        ]);
+    }
+    fclose($output);
+    exit;
+}
 ?>

@@ -67,6 +67,10 @@ if ($uri === '/') {
         admin_delete_question($matches[1]);
     } elseif ($uri === '/admin/analytics') {
         admin_analytics();
+    } elseif ($uri === '/admin/export/participants') {
+        admin_export_participants();
+    } elseif ($uri === '/admin/export/responses') {
+        admin_export_responses();
     } else {
         echo "404 Not Found";
     }
