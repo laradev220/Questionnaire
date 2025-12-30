@@ -4,21 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Participant Information - ResearchSync</title>
+    <title>Participant Information</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gradient-to-br from-purple-50 to-pink-100 min-h-screen">
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="font-bold text-xl text-blue-600">ResearchSync</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
@@ -34,7 +26,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="<?php echo BASE_PATH; ?>/" class="space-y-6">
+                <form method="POST" action="<?php echo $_SERVER['REQUEST_URI']; ?>" class="space-y-6">
                     <div>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

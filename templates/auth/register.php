@@ -4,32 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ResearchSync</title>
+    <title>Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="font-bold text-xl text-blue-600">ResearchSync</span>
-                </div>
+    <body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100 min-h-screen">
+
+
+    <main class="flex min-h-screen">
+        <!-- Left Side - Illustration -->
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 p-12 items-center justify-center relative overflow-hidden">
+                <div class="text-center text-white z-10 animate-fade-in">
+                    <div class="mb-8">
+                        <svg class="w-32 h-32 mx-auto mb-6 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white opacity-90"/>
+                        </svg>
+                    </div>
+                <h1 class="text-4xl font-bold mb-4">Join Us</h1>
+                <p class="text-xl opacity-90">Start your research adventure</p>
+            </div>
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100" height="100" fill="url(#grid)" />
+                </svg>
             </div>
         </div>
-    </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="min-h-[70vh] flex items-center justify-center">
-            <div class="max-w-md w-full bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-                <div class="text-center mb-8">
+        <!-- Right Side - Form -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+            <div class="max-w-md w-full animate-slide-up">
+                <div class="text-center mb-8 lg:hidden">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                    <p class="text-gray-600">Join ResearchSync today</p>
+                    <p class="text-gray-600">Create your account</p>
                 </div>
 
                 <?php if (isset($error)): ?>
-                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center">
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center animate-shake">
                         <i class="fas fa-exclamation-circle mr-2"></i>
                         <?php echo htmlspecialchars($error); ?>
                     </div>
@@ -40,49 +57,188 @@
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400"></i>
+                                <i class="fas fa-user text-emerald-500"></i>
                             </div>
                             <input type="text" id="name" name="name" required
-                                   class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                   class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 hover:border-emerald-300"
                                    placeholder="Enter your full name">
                         </div>
+                        <p class="text-xs text-gray-500 mt-1">This will be displayed on your profile</p>
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400"></i>
+                                <i class="fas fa-envelope text-emerald-500"></i>
                             </div>
                             <input type="email" id="email" name="email" required
-                                   class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                                   placeholder="Enter your email">
+                                   class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 hover:border-emerald-300"
+                                   placeholder="Enter your email address">
                         </div>
+                        <p class="text-xs text-gray-500 mt-1">We'll use this for account verification and notifications</p>
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
+                                <i class="fas fa-lock text-emerald-500"></i>
                             </div>
                             <input type="password" id="password" name="password" required
-                                   class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                                   placeholder="Create a password">
+                                   class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 hover:border-emerald-300"
+                                   placeholder="Create a secure password (min. 8 characters)">
+                            <button type="button" id="togglePassword"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-emerald-600 transition-colors duration-200">
+                                <i class="fas fa-eye text-emerald-500" id="passwordIcon"></i>
+                            </button>
                         </div>
-                    </div>
+                         <div id="passwordStrength" class="mt-2 hidden">
+                             <div class="flex space-x-1">
+                                 <div id="strength1" class="h-1 w-full bg-gray-200 rounded"></div>
+                                 <div id="strength2" class="h-1 w-full bg-gray-200 rounded"></div>
+                                 <div id="strength3" class="h-1 w-full bg-gray-200 rounded"></div>
+                                 <div id="strength4" class="h-1 w-full bg-gray-200 rounded"></div>
+                             </div>
+                             <p id="strengthText" class="text-xs mt-1 text-gray-500"></p>
+                         </div>
+                         <p class="text-xs text-gray-500 mt-1">Use at least 8 characters with uppercase, lowercase, numbers, and symbols</p>
+                     </div>
                     <button type="submit"
-                            class="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+                            class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-glow">
                         <i class="fas fa-user-plus mr-2"></i>Create Account
                     </button>
                 </form>
                 <div class="mt-6 text-center">
                     <p class="text-gray-600">
                         Already have an account?
-                        <a href="<?php echo BASE_PATH; ?>/login" class="text-green-600 hover:text-green-800 font-medium transition-colors duration-200">Sign in here</a>
+                        <a href="<?php echo BASE_PATH; ?>/login" class="text-emerald-600 hover:text-emerald-800 font-medium transition-colors duration-300">Sign in here</a>
                     </p>
                 </div>
             </div>
         </div>
     </main>
+
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+        }
+        .animate-fade-in { animation: fade-in 1s ease-out; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out 0.2s both; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .hover-glow:hover { animation: glow 2s ease-in-out infinite; }
+    </style>
+
+    <script>
+        // Password toggle functionality
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash text-emerald-500';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye text-emerald-500';
+            }
+        });
+
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            const strengthBars = ['strength1', 'strength2', 'strength3', 'strength4'];
+            const strengthText = document.getElementById('strengthText');
+
+            if (password.length === 0) {
+                strengthDiv.classList.add('hidden');
+                return;
+            }
+
+            strengthDiv.classList.remove('hidden');
+
+            // Calculate strength
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            // Reset all bars
+            strengthBars.forEach(id => {
+                document.getElementById(id).className = 'h-1 w-full bg-gray-200 rounded';
+            });
+
+            // Set strength colors
+            const colors = ['bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-blue-400', 'bg-green-400'];
+            const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+
+            for (let i = 0; i < strength; i++) {
+                if (i < strengthBars.length) {
+                    document.getElementById(strengthBars[i]).className = `h-1 w-full ${colors[strength - 1]} rounded`;
+                }
+            }
+
+            strengthText.textContent = texts[Math.min(strength - 1, 4)] || 'Very Weak';
+            strengthText.className = `text-xs mt-1 ${strength >= 4 ? 'text-green-600' : strength >= 3 ? 'text-blue-600' : strength >= 2 ? 'text-yellow-600' : 'text-red-600'}`;
+        });
+
+        // Real-time email validation
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = emailRegex.test(email);
+
+            if (email.length > 0) {
+                if (isValid) {
+                    this.classList.remove('border-red-300', 'focus:ring-red-500');
+                    this.classList.add('border-green-300', 'focus:ring-green-500');
+                } else {
+                    this.classList.remove('border-green-300', 'focus:ring-green-500');
+                    this.classList.add('border-red-300', 'focus:ring-red-500');
+                }
+            } else {
+                this.classList.remove('border-red-300', 'border-green-300', 'focus:ring-red-500', 'focus:ring-green-500');
+            }
+        });
+
+        // Real-time name validation
+        document.getElementById('name').addEventListener('input', function() {
+            const name = this.value.trim();
+            const isValid = name.length >= 2;
+
+            if (name.length > 0) {
+                if (isValid) {
+                    this.classList.remove('border-red-300', 'focus:ring-red-500');
+                    this.classList.add('border-green-300', 'focus:ring-green-500');
+                } else {
+                    this.classList.remove('border-green-300', 'focus:ring-green-500');
+                    this.classList.add('border-red-300', 'focus:ring-red-500');
+                }
+            } else {
+                this.classList.remove('border-red-300', 'border-green-300', 'focus:ring-red-500', 'focus:ring-green-500');
+            }
+        });
+    </script>
 </body>
 
 </html>

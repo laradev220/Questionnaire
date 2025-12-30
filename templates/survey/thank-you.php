@@ -10,20 +10,7 @@
 </head>
 
 <body class="bg-gray-50 text-gray-800">
-    <nav class="bg-white shadow mb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="font-bold text-xl text-blue-600">ResearchSync</span>
-                </div>
-                <div class="flex items-center">
-                    <?php if (isset($_SESSION['participant_name'])): ?>
-                        <span class="text-sm text-gray-500">Hello, <?php echo htmlspecialchars($_SESSION['participant_name']); ?></span>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </nav>
+
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="min-h-[80vh] flex items-center justify-center">
