@@ -26,7 +26,20 @@
             <?php $pageTitle = 'Dashboard'; include 'templates/admin/header.php'; ?>
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
                 <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-<?php echo is_super_admin() ? '5' : '4'; ?> gap-6 mb-8">
+                    <?php if (is_super_admin()): ?>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-indigo-100 rounded-lg">
+                                <i class="fas fa-user-shield text-indigo-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                                <p class="text-3xl font-bold text-gray-900"><?php echo $totalUsers; ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                         <div class="flex items-center">
                             <div class="p-3 bg-blue-100 rounded-lg">

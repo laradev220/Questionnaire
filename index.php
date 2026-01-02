@@ -8,6 +8,7 @@ require_once 'includes/db.php';
 require_once 'includes/admin.php';
 require_once 'includes/auth.php';
 require_once 'includes/survey.php';
+require_once 'includes/security.php';
 
 // Simple Router
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -47,7 +48,7 @@ if ($uri === '/') {
 } elseif ($uri === '/thank-you') {
     include 'templates/survey/thank-you.php';
 
-// Authentication routes
+    // Authentication routes
 } elseif ($uri === '/login') {
     if ($method === 'POST') auth_login();
     else auth_show_login();
@@ -57,15 +58,13 @@ if ($uri === '/') {
 } elseif ($uri === '/logout') {
     auth_logout();
 
-// Researcher routes (require researcher or admin access)
+    // Researcher routes (require researcher or admin access)
 } elseif (preg_match('#^/dashboard$#', $uri)) {
     require_researcher();
     researcher_dashboard();
-
 } elseif (preg_match('#^/surveys/create$#', $uri)) {
     require_researcher();
     researcher_create_survey();
-
 } elseif (preg_match('#^/surveys/(\d+)/edit$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -75,7 +74,6 @@ if ($uri === '/') {
         exit;
     }
     researcher_edit_survey($survey_id);
-
 } elseif (preg_match('#^/surveys/(\d+)/questions$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -85,7 +83,6 @@ if ($uri === '/') {
         exit;
     }
     researcher_assign_questions($survey_id);
-
 } elseif (preg_match('#^/surveys/(\d+)/link$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -95,7 +92,6 @@ if ($uri === '/') {
         exit;
     }
     researcher_generate_link($survey_id);
-
 } elseif (preg_match('#^/surveys/(\d+)/delete$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -104,7 +100,6 @@ if ($uri === '/') {
     } else {
         researcher_delete_survey($survey_id);
     }
-
 } elseif (preg_match('#^/surveys/(\d+)/questions$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -123,7 +118,6 @@ if ($uri === '/') {
     } else {
         researcher_delete_survey($survey_id);
     }
-
 } elseif (preg_match('#^/surveys/(\d+)/analytics$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -133,7 +127,6 @@ if ($uri === '/') {
         exit;
     }
     researcher_survey_analytics($survey_id);
-
 } elseif (preg_match('#^/surveys/(\d+)/participants$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -143,7 +136,6 @@ if ($uri === '/') {
         exit;
     }
     researcher_survey_participants($survey_id);
-
 } elseif (preg_match('#^/surveys/(\d+)/participants/(\d+)$#', $uri, $matches)) {
     require_researcher();
     $survey_id = $matches[1];
@@ -159,24 +151,19 @@ if ($uri === '/') {
     } else {
         researcher_participant_responses($survey_id, $participant_id);
     }
-
 } elseif (preg_match('#^/profile$#', $uri)) {
     require_researcher();
     include 'templates/researcher/profile.php';
-
 } elseif (preg_match('#^/questions$#', $uri)) {
     require_researcher();
     researcher_questions();
-
 } elseif (preg_match('#^/questions/create$#', $uri)) {
     require_researcher();
     researcher_create_question();
-
 } elseif (preg_match('#^/questions/(\d+)/edit$#', $uri, $matches)) {
     require_researcher();
     $question_id = $matches[1];
     researcher_edit_question($question_id);
-
 } elseif (preg_match('#^/questions/(\d+)/delete$#', $uri, $matches)) {
     require_researcher();
     $question_id = $matches[1];
@@ -187,76 +174,114 @@ if ($uri === '/') {
         researcher_delete_question($question_id);
     }
 
-// Survey access by token (public but controlled)
+    // Survey access by token (public but controlled)
 } elseif (preg_match('#^/s/([a-zA-Z0-9]+)$#', $uri, $matches)) {
     $token = $matches[1];
     survey_start_by_token($token);
 
-// Admin routes (require admin access)
+    // Admin routes (require admin access)
 } elseif ($uri === '/admin/login') {
     if ($method === 'POST') {
-        // Use the new admin login that checks role
-        $db = get_db_connection();
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        $stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND role = 'admin'");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        if ($user && password_verify($password, $user['password'])) {
-            session_regenerate_id(true);
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
-            header("Location: " . BASE_PATH . "/admin/dashboard");
-            exit;
-        } else {
-            $error = "Invalid admin credentials";
-            include 'templates/admin/login.php';
-        }
+        admin_login();
     } else {
-        include 'templates/admin/login.php';
+        admin_show_login();
     }
-
 } elseif ($uri === '/admin/logout') {
     auth_logout(); // Use the same logout function
 
 } elseif (preg_match('#^/admin/dashboard$#', $uri)) {
     require_admin();
     admin_dashboard();
-
 } elseif (preg_match('#^/admin/questions$#', $uri)) {
     require_admin();
     admin_questions();
-
 } elseif (preg_match('#^/admin/questions/add$#', $uri)) {
     require_admin();
     if ($method === 'POST') admin_add_question();
     else include 'templates/admin/add_question.php';
-
 } elseif (preg_match('#^/admin/questions/edit/(\d+)$#', $uri, $matches)) {
     require_admin();
     if ($method === 'POST') admin_edit_question($matches[1]);
     else admin_edit_question($matches[1]);
-
 } elseif (preg_match('#^/admin/questions/delete/(\d+)$#', $uri, $matches)) {
     require_admin();
     admin_delete_question($matches[1]);
-
+} elseif (preg_match('#^/admin/questions/bulk$#', $uri)) {
+    require_admin();
+    if ($method === 'POST') admin_bulk_questions();
+    else admin_bulk_questions();
 } elseif (preg_match('#^/admin/analytics$#', $uri)) {
     require_admin();
     admin_analytics();
-
 } elseif (preg_match('#^/admin/export/participants$#', $uri)) {
     require_admin();
     admin_export_participants();
-
 } elseif (preg_match('#^/admin/export/responses$#', $uri)) {
     require_admin();
     admin_export_responses();
 
-// Catch-all for unrecognized routes
+    // New super admin routes
+} elseif (preg_match('#^/admin/users$#', $uri)) {
+    require_super_admin();
+    admin_users();
+} elseif (preg_match('#^/admin/users/add$#', $uri)) {
+    require_super_admin();
+    if ($method === 'POST') admin_add_user();
+    else admin_add_user();
+} elseif (preg_match('#^/admin/users/(\d+)/edit$#', $uri, $matches)) {
+    require_super_admin();
+    if ($method === 'POST') admin_edit_user($matches[1]);
+    else admin_edit_user($matches[1]);
+} elseif (preg_match('#^/admin/users/(\d+)/delete$#', $uri, $matches)) {
+    require_super_admin();
+    admin_delete_user($matches[1]);
+} elseif (preg_match('#^/admin/users/bulk$#', $uri)) {
+    require_super_admin();
+    if ($method === 'POST') admin_bulk_users();
+    else admin_bulk_users();
+} elseif (preg_match('#^/admin/surveys$#', $uri)) {
+    require_admin();
+    admin_surveys();
+} elseif (preg_match('#^/admin/surveys/add$#', $uri)) {
+    require_admin();
+    if ($method === 'POST') admin_add_survey();
+    else admin_add_survey();
+} elseif (preg_match('#^/admin/surveys/(\d+)/edit$#', $uri, $matches)) {
+    require_admin();
+    if ($method === 'POST') admin_edit_survey($matches[1]);
+    else admin_edit_survey($matches[1]);
+} elseif (preg_match('#^/admin/surveys/(\d+)/delete$#', $uri, $matches)) {
+    require_admin();
+    admin_delete_survey($matches[1]);
+} elseif (preg_match('#^/admin/surveys/bulk$#', $uri)) {
+    require_admin();
+    if ($method === 'POST') admin_bulk_surveys();
+    else admin_bulk_surveys();
+} elseif (preg_match('#^/admin/participants$#', $uri)) {
+    require_admin();
+    admin_participants();
+} elseif (preg_match('#^/admin/participants/(\d+)/responses$#', $uri, $matches)) {
+    require_admin();
+    admin_view_participant_responses($matches[1]);
+} elseif (preg_match('#^/admin/participants/(\d+)/delete$#', $uri, $matches)) {
+    require_admin();
+    admin_delete_participant($matches[1]);
+} elseif (preg_match('#^/admin/participants/bulk$#', $uri)) {
+    require_admin();
+    if ($method === 'POST') admin_bulk_participants();
+    else admin_bulk_participants();
+} elseif (preg_match('#^/admin/responses$#', $uri)) {
+    require_admin();
+    admin_responses();
+} elseif (preg_match('#^/admin/responses/(\d+)/edit$#', $uri, $matches)) {
+    require_admin();
+    if ($method === 'POST') admin_edit_response($matches[1]);
+    else admin_edit_response($matches[1]);
+} elseif (preg_match('#^/admin/responses/(\d+)/delete$#', $uri, $matches)) {
+    require_admin();
+    admin_delete_response($matches[1]);
+
+    // Catch-all for unrecognized routes
 } else {
     // Check if it's an admin route that requires login
     if (strpos($uri, '/admin/') === 0) {

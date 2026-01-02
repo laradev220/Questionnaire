@@ -1,8 +1,10 @@
 <?php
+
 /**
  * Start a survey based on token
  */
-function survey_start_by_token($token) {
+function survey_start_by_token($token)
+{
     $db = get_db_connection();
 
     // Find survey by token
@@ -39,7 +41,8 @@ function survey_start_by_token($token) {
 /**
  * Start participant registration for a specific survey
  */
-function survey_start_participant($survey_id) {
+function survey_start_participant($survey_id)
+{
     $db = get_db_connection();
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -77,8 +80,8 @@ function survey_start_participant($survey_id) {
     $_SESSION['participant_id'] = $participantId;
     $_SESSION['participant_name'] = $name;
 
-    // Redirect directly to first survey module instead of progress page
-    header("Location: " . BASE_PATH . "/survey?module=1");
+    // Redirect to progress dashboard first
+    header("Location: " . BASE_PATH . "/progress");
     exit;
 }
 
@@ -86,13 +89,15 @@ function survey_start_participant($survey_id) {
  * Legacy function for backward compatibility
  * TODO: Remove this once all routes are updated
  */
-function survey_start() {
+function survey_start()
+{
     // For now, redirect to home - this should be updated
     header("Location: " . BASE_PATH . "/");
     exit;
 }
 
-function survey_dashboard() {
+function survey_dashboard()
+{
     $db = get_db_connection();
     try {
         $participantId = $_SESSION['participant_id'];
@@ -149,6 +154,15 @@ function survey_dashboard() {
         $stmt->execute([$surveyId]);
         $modules = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+        // Extract variables for template
+        $template_vars = [
+            'survey' => $survey,
+            'session' => $session,
+            'modules' => $modules,
+            'surveyTitle' => $surveyTitle
+        ];
+        extract($template_vars);
+
         include __DIR__ . '/../templates/survey/dashboard.php';
     } catch (Exception $e) {
         header("Location: " . BASE_PATH . "/");
@@ -156,7 +170,8 @@ function survey_dashboard() {
     }
 }
 
-function survey_show_module($moduleId, $page = 1) {
+function survey_show_module($moduleId, $page = 1)
+{
     $db = get_db_connection();
     try {
         $participantId = $_SESSION['participant_id'];
@@ -252,7 +267,8 @@ function survey_show_module($moduleId, $page = 1) {
     }
 }
 
-function survey_store_module($moduleId, $page) {
+function survey_store_module($moduleId, $page)
+{
     $db = get_db_connection();
     try {
         $participantId = $_SESSION['participant_id'];
@@ -356,4 +372,3 @@ function survey_store_module($moduleId, $page) {
         exit;
     }
 }
-?>

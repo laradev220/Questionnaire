@@ -20,11 +20,19 @@ function get_authenticated_user() {
 }
 
 /**
- * Check if current user is admin
+ * Check if current user is super admin
+ */
+function is_super_admin() {
+    $user = get_authenticated_user();
+    return $user && $user['role'] === 'super_admin';
+}
+
+/**
+ * Check if current user is admin (super_admin or admin)
  */
 function is_admin() {
     $user = get_authenticated_user();
-    return $user && $user['role'] === 'admin';
+    return $user && ($user['role'] === 'admin' || $user['role'] === 'super_admin');
 }
 
 /**
@@ -32,14 +40,24 @@ function is_admin() {
  */
 function is_researcher() {
     $user = get_authenticated_user();
-    return $user && ($user['role'] === 'researcher' || $user['role'] === 'admin');
+    return $user && ($user['role'] === 'researcher' || is_admin());
 }
 
 /**
  * Require authentication - redirect to login if not authenticated
  */
 function require_auth() {
-    if (!get_current_user()) {
+    if (!get_authenticated_user()) {
+        header("Location: " . BASE_PATH . "/login");
+        exit;
+    }
+}
+
+/**
+ * Require super admin access - redirect if not super admin
+ */
+function require_super_admin() {
+    if (!is_super_admin()) {
         header("Location: " . BASE_PATH . "/login");
         exit;
     }
@@ -74,8 +92,13 @@ function can_access_survey($survey_id) {
         return false;
     }
 
+    // Super admin can access any survey
+    if (is_super_admin()) {
+        return true;
+    }
+
     // Admin can access any survey
-    if (is_admin()) {
+    if ($user['role'] === 'admin') {
         return true;
     }
 
@@ -94,7 +117,8 @@ function can_access_survey($survey_id) {
 function get_user_role_display($role) {
     $roles = [
         'researcher' => 'Researcher',
-        'admin' => 'Administrator'
+        'admin' => 'Administrator',
+        'super_admin' => 'Super Administrator'
     ];
     return $roles[$role] ?? 'Unknown';
 }
@@ -129,7 +153,7 @@ function auth_login() {
         $_SESSION['user_role'] = $user['role'];
 
         // Redirect based on role
-        if ($user['role'] === 'admin') {
+        if (is_admin()) {
             header("Location: " . BASE_PATH . "/admin/dashboard");
         } else {
             header("Location: " . BASE_PATH . "/dashboard");

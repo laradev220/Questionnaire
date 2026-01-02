@@ -11,16 +11,27 @@ try {
     $db = get_db_connection();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Debug: Check current database
+    $stmt = $db->query("SELECT DATABASE() as db");
+    $currentDb = $stmt->fetch()['db'];
+    echo "Connected to database: $currentDb\n";
+
     // Step 1: Add role column to users table
     echo "Step 1: Adding role column to users table...\n";
     try {
-        $db->exec("ALTER TABLE users ADD COLUMN role ENUM('researcher', 'admin') DEFAULT 'researcher' AFTER is_admin");
+        $db->exec("ALTER TABLE users ADD COLUMN role ENUM('researcher', 'admin', 'super_admin') DEFAULT 'researcher' AFTER is_admin");
         echo "✓ Added role column\n";
     } catch (PDOException $e) {
         if (strpos($e->getMessage(), 'Duplicate column name') === false) {
             throw $e;
         }
-        echo "✓ Role column already exists\n";
+        echo "✓ Role column already exists, modifying enum...\n";
+        try {
+            $db->exec("ALTER TABLE users MODIFY COLUMN role ENUM('researcher', 'admin', 'super_admin') DEFAULT 'researcher'");
+            echo "✓ Modified role enum\n";
+        } catch (PDOException $e2) {
+            echo "✓ Role enum already includes super_admin\n";
+        }
     }
 
     // Step 2: Update existing users with correct roles based on is_admin
@@ -60,29 +71,47 @@ try {
     ");
     echo "✓ Created survey_questions table\n";
 
-    // Step 5: Add survey_id to survey_sessions table
+    // Step 5: Create question_options table
+    echo "Step 5: Creating question_options table...\n";
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS question_options (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            question_id INT NOT NULL,
+            option_text TEXT NOT NULL,
+            option_value INT NOT NULL,
+            order_index INT DEFAULT 0,
+            FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+    echo "✓ Created question_options table\n";
+
+    // Step 6: Add survey_id to survey_sessions table
     echo "Step 5: Adding survey_id to survey_sessions table...\n";
     try {
         $db->exec("ALTER TABLE survey_sessions ADD COLUMN survey_id INT NULL AFTER participant_id");
         $db->exec("ALTER TABLE survey_sessions ADD CONSTRAINT fk_survey_sessions_survey FOREIGN KEY (survey_id) REFERENCES surveys(id)");
         echo "✓ Added survey_id column to survey_sessions\n";
     } catch (PDOException $e) {
-        if (strpos($e->getMessage(), 'Duplicate column name') === false &&
-            strpos($e->getMessage(), 'Duplicate foreign key') === false) {
+        if (
+            strpos($e->getMessage(), 'Duplicate column name') === false &&
+            strpos($e->getMessage(), 'Duplicate foreign key') === false
+        ) {
             throw $e;
         }
         echo "✓ survey_id column already exists in survey_sessions\n";
     }
 
-    // Step 6: Add survey_id to participants table
-    echo "Step 6: Adding survey_id to participants table...\n";
+    // Step 7: Add survey_id to participants table
+    echo "Step 7: Adding survey_id to participants table...\n";
     try {
         $db->exec("ALTER TABLE participants ADD COLUMN survey_id INT NULL AFTER id");
         $db->exec("ALTER TABLE participants ADD CONSTRAINT fk_participants_survey FOREIGN KEY (survey_id) REFERENCES surveys(id) ON DELETE CASCADE");
         echo "✓ Added survey_id column to participants\n";
     } catch (PDOException $e) {
-        if (strpos($e->getMessage(), 'Duplicate column name') === false &&
-            strpos($e->getMessage(), 'Duplicate foreign key') === false) {
+        if (
+            strpos($e->getMessage(), 'Duplicate column name') === false &&
+            strpos($e->getMessage(), 'Duplicate foreign key') === false
+        ) {
             throw $e;
         }
         echo "✓ survey_id column already exists in participants\n";
@@ -100,15 +129,73 @@ try {
     ");
     echo "✓ Created settings table\n";
 
-    // Step 8: Add user_id to questions table for researcher ownership
+    // Step 9: Migrate existing data
+    echo "Step 9: Migrating existing data...\n";
+
+    // Get admin user ID
+    $adminUserId = $db->query("SELECT id FROM users WHERE role = 'admin' OR role = 'super_admin' LIMIT 1")->fetchColumn();
+    if (!$adminUserId) {
+        $adminUserId = $db->query("SELECT id FROM users LIMIT 1")->fetchColumn();
+    }
+
+    // If there's still no user present, create a default super_admin to own migrated data
+    if (!$adminUserId) {
+        echo "No users found — creating default super_admin...\n";
+        $defaultAdminEmail = 'admin@example.com';
+        $defaultAdminName = 'Administrator';
+        $defaultPassword = bin2hex(random_bytes(8));
+        $hashed = password_hash($defaultPassword, PASSWORD_DEFAULT);
+        $createStmt = $db->prepare("INSERT INTO users (name, email, password, role, is_admin) VALUES (?, ?, ?, 'super_admin', 1)");
+        $createStmt->execute([$defaultAdminName, $defaultAdminEmail, $hashed]);
+        $adminUserId = $db->lastInsertId();
+        echo "✓ Created default super_admin with ID: $adminUserId and email: $defaultAdminEmail\n";
+    }
+
+    // Create default survey for existing questions (if not exists)
+    $existingSurvey = $db->query("SELECT id FROM surveys WHERE title = 'SHRM Survey' LIMIT 1")->fetch();
+    if (!$existingSurvey) {
+        $linkToken = bin2hex(random_bytes(16));
+        $stmt = $db->prepare("INSERT INTO surveys (user_id, title, description, link_token, is_active) VALUES (?, 'SHRM Survey', 'Sustainable Human Resource Management Survey', ?, 1)");
+        $stmt->execute([$adminUserId, $linkToken]);
+        $defaultSurveyId = $db->lastInsertId();
+        echo "✓ Created default survey with ID: $defaultSurveyId\n";
+    } else {
+        $defaultSurveyId = $existingSurvey['id'];
+        echo "✓ Default survey already exists with ID: $defaultSurveyId\n";
+    }
+
+    // Assign all existing questions to the default survey (if not already assigned)
+    $assignStmt = $db->prepare("INSERT INTO survey_questions (survey_id, question_id, order_index) SELECT ?, id, id FROM questions q WHERE NOT EXISTS (SELECT 1 FROM survey_questions sq WHERE sq.survey_id = ? AND sq.question_id = q.id)");
+    $assignStmt->execute([$defaultSurveyId, $defaultSurveyId]);
+    echo "✓ Assigned existing questions to default survey\n";
+
+    // Set survey_id for existing participants and sessions (if not set)
+    $updPartStmt = $db->prepare("UPDATE participants SET survey_id = ? WHERE survey_id IS NULL");
+    $updPartStmt->execute([$defaultSurveyId]);
+    $updSessStmt = $db->prepare("UPDATE survey_sessions SET survey_id = ? WHERE survey_id IS NULL");
+    $updSessStmt->execute([$defaultSurveyId]);
+    echo "✓ Linked existing participants and sessions to default survey\n";
+
+    // Set user_id for existing questions (to admin, if not set)
+    $updQStmt = $db->prepare("UPDATE questions SET user_id = ? WHERE user_id IS NULL");
+    $updQStmt->execute([$adminUserId]);
+    echo "✓ Assigned ownership of existing questions to admin user\n";
+
+    // Set first admin as super_admin
+    $db->exec("UPDATE users SET role = 'super_admin' WHERE role = 'admin' LIMIT 1");
+    echo "✓ Promoted first admin to super_admin\n";
+
+    // Step 10: Add user_id to questions table for researcher ownership
     echo "Step 8: Adding user_id and created_at to questions table...\n";
     try {
         $db->exec("ALTER TABLE questions ADD COLUMN user_id INT NULL AFTER id");
         $db->exec("ALTER TABLE questions ADD CONSTRAINT fk_questions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE");
         echo "✓ Added user_id column to questions table\n";
     } catch (PDOException $e) {
-        if (strpos($e->getMessage(), 'Duplicate column name') === false &&
-            strpos($e->getMessage(), 'Duplicate foreign key') === false) {
+        if (
+            strpos($e->getMessage(), 'Duplicate column name') === false &&
+            strpos($e->getMessage(), 'Duplicate foreign key') === false
+        ) {
             throw $e;
         }
         echo "✓ user_id column already exists in questions table\n";
@@ -124,63 +211,79 @@ try {
         echo "✓ created_at column already exists in questions table\n";
     }
 
-    // Step 9: Change responses.question_id to INT if it's VARCHAR
-    echo "Step 9: Checking responses table structure...\n";
-    $stmt = $db->query("DESCRIBE responses");
-    $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $questionIdType = null;
-
-    foreach ($columns as $column) {
-        if ($column['Field'] === 'question_id') {
-            $questionIdType = $column['Type'];
-            break;
+    try {
+        $db->exec("ALTER TABLE questions ADD COLUMN type ENUM('scale','multiple_choice') DEFAULT 'scale'");
+        echo "✓ Added type column to questions table\n";
+    } catch (PDOException $e) {
+        if (strpos($e->getMessage(), 'Duplicate column name') === false) {
+            throw $e;
         }
+        echo "✓ type column already exists in questions table\n";
     }
 
-    if (strpos($questionIdType, 'varchar') !== false || strpos($questionIdType, 'char') !== false) {
-        echo "Converting responses.question_id from VARCHAR to INT...\n";
+    // Step 9: Change responses.question_id to INT if it's VARCHAR
+    echo "Step 9: Checking responses table structure...\n";
+    // Only attempt if `responses` table exists
+    $tableCheck = $db->query("SHOW TABLES LIKE 'responses'");
+    if ($tableCheck->rowCount() === 0) {
+        echo "✓ responses table does not exist, skipping conversion\n";
+    } else {
+        $stmt = $db->query("DESCRIBE responses");
+        $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $questionIdType = null;
 
-        // First, convert any question codes to IDs
-        // Handle CDC_1 -> CDC 1
-        $db->exec("
-            UPDATE responses r
-            JOIN questions q ON REPLACE(r.question_id, '_', ' ') = q.code
-            SET r.question_id = q.id
-            WHERE r.question_id LIKE 'CDC_%'
-        ");
-
-        // Handle HRA1_1 -> HRA1.1
-        $db->exec("
-            UPDATE responses r
-            JOIN questions q ON REPLACE(r.question_id, '_', '.') = q.code
-            SET r.question_id = q.id
-            WHERE r.question_id LIKE 'HRA%_%'
-        ");
-
-        // Any remaining codes that match exactly
-        $db->exec("
-            UPDATE responses r
-            JOIN questions q ON r.question_id = q.code
-            SET r.question_id = q.id
-            WHERE r.question_id NOT REGEXP '^[0-9]+$'
-        ");
-
-        // Now convert string numbers to actual integers
-        $db->exec("UPDATE responses SET question_id = CAST(question_id AS UNSIGNED) WHERE question_id REGEXP '^[0-9]+$'");
-
-        // Convert column type
-        $db->exec("ALTER TABLE responses MODIFY COLUMN question_id INT NOT NULL");
-
-        // Add foreign key constraint
-        try {
-            $db->exec("ALTER TABLE responses ADD CONSTRAINT fk_responses_question FOREIGN KEY (question_id) REFERENCES questions(id)");
-        } catch (PDOException $e) {
-            // Constraint might already exist
+        foreach ($columns as $column) {
+            if ($column['Field'] === 'question_id') {
+                $questionIdType = $column['Type'];
+                break;
+            }
         }
 
-        echo "✓ Converted responses.question_id to INT\n";
-    } else {
-        echo "✓ responses.question_id is already INT\n";
+        if ($questionIdType && (strpos($questionIdType, 'varchar') !== false || strpos($questionIdType, 'char') !== false)) {
+            echo "Converting responses.question_id from VARCHAR to INT...\n";
+
+            // First, convert any question codes to IDs
+            // Handle CDC_1 -> CDC 1
+            $db->exec("
+                    UPDATE responses r
+                    JOIN questions q ON REPLACE(r.question_id, '_', ' ') = q.code
+                    SET r.question_id = q.id
+                    WHERE r.question_id LIKE 'CDC_%'
+                ");
+
+            // Handle HRA1_1 -> HRA1.1
+            $db->exec("
+                    UPDATE responses r
+                    JOIN questions q ON REPLACE(r.question_id, '_', '.') = q.code
+                    SET r.question_id = q.id
+                    WHERE r.question_id LIKE 'HRA%_%'
+                ");
+
+            // Any remaining codes that match exactly
+            $db->exec("
+                    UPDATE responses r
+                    JOIN questions q ON r.question_id = q.code
+                    SET r.question_id = q.id
+                    WHERE r.question_id NOT REGEXP '^[0-9]+$'
+                ");
+
+            // Now convert string numbers to actual integers
+            $db->exec("UPDATE responses SET question_id = CAST(question_id AS UNSIGNED) WHERE question_id REGEXP '^[0-9]+$'");
+
+            // Convert column type
+            $db->exec("ALTER TABLE responses MODIFY COLUMN question_id INT NOT NULL");
+
+            // Add foreign key constraint
+            try {
+                $db->exec("ALTER TABLE responses ADD CONSTRAINT fk_responses_question FOREIGN KEY (question_id) REFERENCES questions(id)");
+            } catch (PDOException $e) {
+                // Constraint might already exist
+            }
+
+            echo "✓ Converted responses.question_id to INT\n";
+        } else {
+            echo "✓ responses.question_id is already INT or question_id column not found\n";
+        }
     }
 
     // Step 10: Add performance indexes
@@ -206,7 +309,7 @@ try {
     echo "\n=== Migration Verification ===\n";
 
     // Check table structures
-    $tables = ['users', 'surveys', 'survey_questions', 'survey_sessions', 'responses', 'settings'];
+    $tables = ['users', 'surveys', 'survey_questions', 'question_options', 'survey_sessions', 'responses', 'settings'];
     foreach ($tables as $table) {
         $stmt = $db->query("SHOW TABLES LIKE '$table'");
         if ($stmt->rowCount() > 0) {
@@ -238,10 +341,8 @@ try {
     echo "You can now use the multi-tenant survey system.\n";
     echo "Admin user can log in at /admin/login\n";
     echo "Researchers can register at /register\n";
-
 } catch (Exception $e) {
     echo "\n❌ Migration failed: " . $e->getMessage() . "\n";
     echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
     exit(1);
 }
-?>
