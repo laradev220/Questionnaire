@@ -23,36 +23,36 @@
 
         .form-input:focus {
             background: white;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            border-color: #ea580c;
+            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2);
         }
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+<body class="bg-gradient-to-br from-orange-50 via-red-50 to-pink-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-white/90 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+    <nav class="bg-white/90 backdrop-blur-sm border-b border-orange-200 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-md">
+                        class="w-10 h-10 bg-gradient-to-br from-orange-600 to-red-700 rounded-lg flex items-center justify-center shadow-md">
                         <i class="fas fa-microscope text-white text-sm"></i>
                     </div>
                     <div>
-                        <span class="font-bold text-lg text-slate-800 tracking-tight">ResearchSync</span>
-                        <span class="text-xs text-slate-500 font-medium ml-2">Academic Survey Platform</span>
+                        <span class="font-bold text-lg text-orange-800 tracking-tight">ResearchSync</span>
+                        <span class="text-xs text-orange-500 font-medium ml-2">Academic Survey Platform</span>
                     </div>
                 </div>
                 <a href="#footer"
-                    class="text-slate-600 font-medium text-sm transition-colors duration-200 flex items-center">
-                    <i class="fas fa-question-circle text-blue-500 mr-2"></i>
+                    class="text-orange-600 font-medium text-sm transition-colors duration-200 flex items-center">
+                    <i class="fas fa-question-circle text-orange-500 mr-2"></i>
                     <span>Need Help?</span>
                 </a>
             </div>
@@ -78,7 +78,7 @@
                 <!-- Name Field -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-slate-700 flex items-center">
-                        <i class="fas fa-user text-blue-400 mr-2"></i>
+                        <i class="fas fa-user text-orange-400 mr-2"></i>
                         Full Name
                         <span class="text-red-500 ml-1">*</span>
                     </label>
@@ -95,7 +95,7 @@
                 <!-- Email Field -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-slate-700 flex items-center">
-                        <i class="fas fa-envelope text-blue-400 mr-2"></i>
+                        <i class="fas fa-envelope text-orange-400 mr-2"></i>
                         Email Address
                         <span class="text-red-500 ml-1">*</span>
                     </label>
@@ -112,7 +112,7 @@
                 <!-- Phone Field -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-slate-700 flex items-center">
-                        <i class="fas fa-phone text-blue-400 mr-2"></i>
+                        <i class="fas fa-phone text-orange-400 mr-2"></i>
                         Phone Number
                         <span class="text-red-500 ml-1">*</span>
                     </label>
@@ -129,7 +129,7 @@
                 <!-- University Field -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-slate-700 flex items-center">
-                        <i class="fas fa-university text-blue-400 mr-2"></i>
+                        <i class="fas fa-university text-orange-400 mr-2"></i>
                         University/Institution
                         <span class="text-red-500 ml-1">*</span>
                     </label>
@@ -146,7 +146,7 @@
                 <!-- Designation Field -->
                 <div class="space-y-3">
                     <label class="block text-sm font-semibold text-slate-700 flex items-center">
-                        <i class="fas fa-briefcase text-blue-400 mr-2"></i>
+                        <i class="fas fa-briefcase text-orange-400 mr-2"></i>
                         Designation
                         <span class="text-red-500 ml-1">*</span>
                     </label>
